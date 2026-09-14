@@ -396,7 +396,7 @@
 // ===================== SUPABASE CONFIG =====================
 const SUPABASE_URL = 'https://ybspsnxdbjdkenhjbqfw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlic3BzbnhkYmpka2VuaGpicWZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNzY0NDQsImV4cCI6MjEwNDk1MjQ0NH0.-CjRL16QXdYL779f3Xw9txl2BwikPYUJrUhPke7lLlg'; // giữ nguyên đoạn key dài của ông
-supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   realtime: { params: { eventsPerSecond: 10 } }
 });
 
