@@ -5,24 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Greenfield Antlers - Quản lý đội bóng</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {} }
+  }
+</script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root {
-    --green-50: #f0fdf4; --green-100: #dcfce7; --green-200: #bbf7d0;
-    --green-300: #86efac; --green-400: #4ade80; --green-500: #22c55e;
-    --green-600: #16a34a; --green-700: #15803d; --green-800: #166534;
-    --green-900: #14532d; --green-950: #052e16;
-  }
   * { font-family: 'Inter', sans-serif; }
-  body { background: var(--green-950); }
+  body { background: #052e16; }
+  .dark body, body.dark { background: #0a0a0a; }
   .tab-panel { animation: fadeInUp 0.4s ease-out; }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
   .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
-  .tab-btn::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px; background: linear-gradient(90deg, var(--green-400), var(--green-200)); transition: all 0.3s ease; transform: translateX(-50%); border-radius: 3px 3px 0 0; }
+  .tab-btn::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px; background: linear-gradient(90deg, #4ade80, #bbf7d0); transition: all 0.3s ease; transform: translateX(-50%); border-radius: 3px 3px 0 0; }
   .tab-btn.active::after { width: 70%; }
-  .tab-btn.active { color: var(--green-100); }
+  .tab-btn.active { color: #dcfce7; }
   .vote-btn { transition: all 0.2s ease; position: relative; overflow: hidden; }
   .vote-btn:active { transform: scale(0.95); }
   .vote-btn.active { box-shadow: 0 0 0 3px rgba(255,255,255,0.15) inset; }
@@ -33,10 +33,10 @@
   @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); } 70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
   .scroll-thin::-webkit-scrollbar { width: 5px; }
   .scroll-thin::-webkit-scrollbar-track { background: transparent; }
-  .scroll-thin::-webkit-scrollbar-thumb { background: var(--green-700); border-radius: 10px; }
+  .scroll-thin::-webkit-scrollbar-thumb { background: #15803d; border-radius: 10px; }
   .badge-enter { animation: badgePop 0.3s ease; }
   @keyframes badgePop { 0% { transform: scale(0); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
-  .gradient-green { background: linear-gradient(135deg, var(--green-700) 0%, var(--green-900) 100%); }
+  .gradient-green { background: linear-gradient(135deg, #15803d 0%, #052e16 100%); }
   .member-card { transition: all 0.2s ease; }
   .member-card:hover { transform: translateX(4px); }
   .fade-in { animation: fadeIn 0.3s ease; }
@@ -48,10 +48,30 @@
   ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
   .live-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; display: inline-block; animation: livePulse 1.5s infinite; }
   @keyframes livePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .modal-overlay { animation: overlayIn 0.2s ease; }
+  @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+  .switch { position: relative; display: inline-block; width: 52px; height: 28px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #cbd5e1; transition: 0.3s; border-radius: 28px; }
+  .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background: white; transition: 0.3s; border-radius: 50%; }
+  input:checked + .slider { background: #16a34a; }
+  input:checked + .slider:before { transform: translateX(24px); }
+  .page-btn { transition: all 0.2s ease; }
+  .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .stat-card { transition: all 0.3s ease; }
+  .stat-card:hover { transform: translateY(-2px); }
+  .admin-table-row { transition: all 0.2s ease; }
+  .admin-table-row:hover { background: rgba(34,197,94,0.05); }
+  .skeleton { animation: shimmer 1.5s infinite; }
+  @keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: calc(200px + 100%) 0; } }
+  .slide-in-right { animation: slideInRight 0.3s ease; }
+  @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  .glass { backdrop-filter: blur(12px); background: rgba(255,255,255,0.08); }
+  .dark .glass { backdrop-filter: blur(12px); background: rgba(255,255,255,0.05); }
 </style>
   <meta property="og:image" content="https://bolt.new/static/og_default.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
 </head>
 <body class="min-h-screen text-gray-100 antialiased">
 
@@ -66,11 +86,7 @@
       <p class="text-green-200 text-sm font-medium tracking-widest mt-1">ANTLERS FC</p>
     </div>
     <div class="p-8">
-      <div id="loginLoading" class="text-center py-8">
-        <i class="fas fa-spinner fa-spin text-green-500 text-2xl"></i>
-        <p class="text-gray-400 text-sm mt-3">Đang tải danh sách thành viên...</p>
-      </div>
-      <div id="loginForm" class="space-y-4 hidden">
+      <div id="loginForm" class="space-y-4">
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2">Chọn tên của bạn</label>
           <select id="memberSelect" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all text-gray-800 font-medium">
@@ -106,10 +122,13 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <span class="live-dot" title="Đã kết nối realtime"></span>
+        <span class="live-dot" title="Dữ liệu đã lưu"></span>
         <span id="adminBadge" class="hidden bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">
           <i class="fas fa-crown mr-1"></i>Đội trưởng
         </span>
+        <button onclick="toggleTheme()" id="themeBtn" class="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all text-white" title="Dark/Light mode">
+          <i class="fas fa-moon text-sm" id="themeIcon"></i>
+        </button>
         <button onclick="openSettingsModal()" class="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all text-white" title="Cài đặt cá nhân">
           <i class="fas fa-gear text-sm"></i>
         </button>
@@ -128,6 +147,9 @@
       </button>
       <button onclick="switchTab('fund')" id="tabBtnFund" class="tab-btn flex-1 py-3.5 text-sm font-semibold text-gray-300 flex items-center justify-center gap-2">
         <i class="fas fa-wallet"></i><span class="hidden sm:inline">Quỹ Đội</span><span class="sm:hidden">Quỹ</span>
+      </button>
+      <button onclick="switchTab('admin')" id="tabBtnAdmin" class="tab-btn hidden flex-1 py-3.5 text-sm font-semibold text-gray-300 flex items-center justify-center gap-2">
+        <i class="fas fa-shield-halved"></i><span class="hidden sm:inline">Admin</span><span class="sm:hidden">Admin</span>
       </button>
     </div>
   </header>
@@ -277,11 +299,104 @@
         </div>
       </div>
     </div>
+
+    <!-- ===================== TAB ADMIN ===================== -->
+    <div id="tabAdmin" class="tab-panel hidden">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <div class="stat-card bg-gradient-to-br from-green-700 to-green-900 rounded-2xl p-5 shadow-xl border border-green-600/30">
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-users text-green-200"></i>
+            </div>
+            <span class="text-green-300 text-xs font-medium">Tổng</span>
+          </div>
+          <p id="adminStatTotal" class="text-3xl font-extrabold text-white">0</p>
+          <p class="text-green-300 text-xs mt-1">Thành viên</p>
+        </div>
+        <div class="stat-card bg-gradient-to-br from-amber-600 to-amber-800 rounded-2xl p-5 shadow-xl border border-amber-500/30">
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-crown text-amber-200"></i>
+            </div>
+            <span class="text-amber-200 text-xs font-medium">Admin</span>
+          </div>
+          <p id="adminStatAdmins" class="text-3xl font-extrabold text-white">0</p>
+          <p class="text-amber-200 text-xs mt-1">Quản trị viên</p>
+        </div>
+        <div class="stat-card bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-5 shadow-xl border border-blue-500/30">
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-user-plus text-blue-200"></i>
+            </div>
+            <span class="text-blue-200 text-xs font-medium">Mới</span>
+          </div>
+          <p id="adminStatNew" class="text-3xl font-extrabold text-white">0</p>
+          <p class="text-blue-200 text-xs mt-1">Thành viên mới</p>
+        </div>
+        <div class="stat-card bg-gradient-to-br from-yellow-600 to-yellow-800 rounded-2xl p-5 shadow-xl border border-yellow-500/30">
+          <div class="flex items-center justify-between mb-2">
+            <div class="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+              <i class="fas fa-hand-fist text-yellow-200"></i>
+            </div>
+            <span class="text-yellow-200 text-xs font-medium">GK</span>
+          </div>
+          <p id="adminStatGK" class="text-3xl font-extrabold text-white">0</p>
+          <p class="text-yellow-200 text-xs mt-1">Thủ môn</p>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="bg-green-950/60 border border-green-800 rounded-2xl p-4 mb-4">
+        <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+          <div class="relative flex-1">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+            <input id="adminSearch" type="text" placeholder="Tìm kiếm theo tên..." oninput="renderAdminTable()" class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-green-900/40 border border-green-700 text-white placeholder-gray-500 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all text-sm">
+          </div>
+          <button onclick="exportData()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 active:scale-[0.98]">
+            <i class="fas fa-download"></i> Xuất CSV
+          </button>
+          <button onclick="openAddMemberModal()" class="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition-all text-sm flex items-center justify-center gap-2 active:scale-[0.98]">
+            <i class="fas fa-user-plus"></i> Thêm thành viên
+          </button>
+        </div>
+      </div>
+
+      <!-- Members Table -->
+      <div class="bg-green-950/60 border border-green-800 rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-green-800 text-left">
+                <th class="px-4 py-3 text-green-300 font-semibold text-xs uppercase tracking-wide">#</th>
+                <th class="px-4 py-3 text-green-300 font-semibold text-xs uppercase tracking-wide">Họ tên</th>
+                <th class="px-4 py-3 text-green-300 font-semibold text-xs uppercase tracking-wide">Tài khoản</th>
+                <th class="px-4 py-3 text-green-300 font-semibold text-xs uppercase tracking-wide">Mật khẩu</th>
+                <th class="px-4 py-3 text-green-300 font-semibold text-xs uppercase tracking-wide">Vai trò</th>
+                <th class="px-4 py-3 text-green-300 font-semibold text-xs uppercase tracking-wide">GK</th>
+                <th class="px-4 py-3 text-green-300 font-semibold text-xs uppercase tracking-wide text-right">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+          </table>
+        </div>
+        <div id="adminEmpty" class="hidden py-12 text-center">
+          <i class="fas fa-user-slash text-green-700 text-3xl mb-3"></i>
+          <p class="text-green-400 text-sm">Không tìm thấy thành viên nào</p>
+        </div>
+        <!-- Pagination -->
+        <div id="adminPagination" class="px-4 py-3 border-t border-green-800 flex items-center justify-between flex-wrap gap-2">
+          <p id="adminPageInfo" class="text-green-300 text-xs"></p>
+          <div id="adminPageBtns" class="flex gap-1"></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <!-- ===================== MODAL: Edit Match ===================== -->
-<div id="matchModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<div id="matchModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-overlay">
   <div class="login-card bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
     <div class="gradient-green px-6 py-4 flex items-center justify-between">
       <h3 class="text-white font-bold"><i class="fas fa-calendar-edit mr-2"></i>Thiết lập trận đấu</h3>
@@ -304,7 +419,7 @@
 </div>
 
 <!-- ===================== MODAL: Fund Transaction ===================== -->
-<div id="fundModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<div id="fundModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-overlay">
   <div class="login-card bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
     <div id="fundModalHeader" class="gradient-green px-6 py-4 flex items-center justify-between">
       <h3 id="fundModalTitle" class="text-white font-bold">Nhập quỹ</h3>
@@ -333,7 +448,7 @@
 </div>
 
 <!-- ===================== MODAL: Settings ===================== -->
-<div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-overlay">
   <div class="login-card bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
     <div class="gradient-green px-6 py-4 flex items-center justify-between">
       <h3 class="text-white font-bold"><i class="fas fa-gear mr-2"></i>Cài đặt cá nhân</h3>
@@ -368,19 +483,101 @@
   </div>
 </div>
 
+<!-- ===================== MODAL: Add Member ===================== -->
+<div id="addMemberModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-overlay">
+  <div class="login-card bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden max-h-[90vh] overflow-y-auto scroll-thin">
+    <div class="gradient-green px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <h3 class="text-white font-bold"><i class="fas fa-user-plus mr-2"></i>Thêm thành viên mới</h3>
+      <button onclick="closeModal('addMemberModal')" class="text-white/70 hover:text-white"><i class="fas fa-xmark text-lg"></i></button>
+    </div>
+    <div class="p-6 space-y-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Họ và tên <span class="text-red-500">*</span></label>
+        <input id="newMemberName" type="text" placeholder="VD: Nguyễn Văn A" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all text-gray-800 font-medium">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Tài khoản (tự tạo)</label>
+          <input id="newMemberUsername" type="text" placeholder="auto" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all text-gray-800 text-sm" oninput="document.getElementById('newMemberUsername').dataset.manual='1'">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Mật khẩu (tự tạo)</label>
+          <input id="newMemberPassword" type="text" placeholder="123456" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all text-gray-800 text-sm">
+        </div>
+      </div>
+      <div class="flex items-center gap-6">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input id="newMemberGK" type="checkbox" class="w-5 h-5 accent-green-600 rounded">
+          <span class="text-sm font-semibold text-gray-700">Thủ môn (GK)</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input id="newMemberAdmin" type="checkbox" class="w-5 h-5 accent-amber-500 rounded">
+          <span class="text-sm font-semibold text-gray-700">Quản trị viên</span>
+        </label>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-700">
+        <i class="fas fa-info-circle mr-1"></i> Tài khoản và mật khẩu sẽ tự tạo nếu bạn để trống. Tài khoản mặc định = tên không dấu, mật khẩu mặc định = 123456.
+      </div>
+      <button onclick="addMember()" id="addMemberBtn" class="w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all active:scale-[0.98]">
+        <i class="fas fa-check mr-2"></i>Thêm thành viên
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: Edit Member (Admin) ===================== -->
+<div id="editMemberModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-overlay">
+  <div class="login-card bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden max-h-[90vh] overflow-y-auto scroll-thin">
+    <div class="gradient-green px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+      <h3 class="text-white font-bold"><i class="fas fa-user-pen mr-2"></i>Sửa thành viên</h3>
+      <button onclick="closeModal('editMemberModal')" class="text-white/70 hover:text-white"><i class="fas fa-xmark text-lg"></i></button>
+    </div>
+    <div class="p-6 space-y-4">
+      <input type="hidden" id="editMemberId">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Họ và tên</label>
+        <input id="editMemberName" type="text" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all text-gray-800 font-medium">
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Tài khoản</label>
+          <input id="editMemberUsername" type="text" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all text-gray-800 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Mật khẩu</label>
+          <input id="editMemberPassword" type="text" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition-all text-gray-800 text-sm">
+        </div>
+      </div>
+      <div class="flex items-center gap-6">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input id="editMemberGK" type="checkbox" class="w-5 h-5 accent-green-600 rounded">
+          <span class="text-sm font-semibold text-gray-700">Thủ môn (GK)</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input id="editMemberAdmin" type="checkbox" class="w-5 h-5 accent-amber-500 rounded">
+          <span class="text-sm font-semibold text-gray-700">Quản trị viên</span>
+        </label>
+      </div>
+      <button onclick="saveEditMember()" id="editMemberBtn" class="w-full py-3.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all active:scale-[0.98]">
+        <i class="fas fa-save mr-2"></i>Lưu thay đổi
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== MODAL: Confirm Clear ===================== -->
-<div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+<div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm modal-overlay">
   <div class="login-card bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
     <div class="px-6 pt-6 text-center">
       <div class="inline-flex w-14 h-14 bg-red-100 rounded-full items-center justify-center mb-4">
         <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
       </div>
-      <h3 class="text-gray-800 font-bold text-lg">Xóa toàn bộ lịch sử?</h3>
-      <p class="text-gray-500 text-sm mt-2">Hành động này không thể hoàn tác. Toàn bộ lịch sử thu chi sẽ bị xóa.</p>
+      <h3 id="confirmTitle" class="text-gray-800 font-bold text-lg">Xóa toàn bộ lịch sử?</h3>
+      <p id="confirmMsg" class="text-gray-500 text-sm mt-2">Hành động này không thể hoàn tác. Toàn bộ lịch sử thu chi sẽ bị xóa.</p>
     </div>
     <div class="p-6 flex gap-3">
       <button onclick="closeModal('confirmModal')" class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-all">Hủy</button>
-      <button onclick="clearFundHistory()" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all">Xóa</button>
+      <button id="confirmOkBtn" class="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all">Xóa</button>
     </div>
   </div>
 </div>
@@ -394,14 +591,44 @@
 </div>
 
 <script>
-// ===================== SUPABASE CONFIG =====================
-const SUPABASE_URL = 'https://ybspsnxdbjdkenhjbqfw.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlic3BzbnhkYmpka2VuaGpicWZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNzY0NDQsImV4cCI6MjEwNDk1MjQ0NH0.-CjRL16QXdYL779f3Xw9txl2BwikPYUJrUhPke7lLlg';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  realtime: { params: { eventsPerSecond: 10 } }
-});
+// ===================== SAMPLE DATA =====================
+const SAMPLE_MEMBERS = [
+  { name: "Tiến Vinh", isGK: false, role: "admin" },
+  { name: "Đức Hiếu", isGK: true, role: "member" },
+  { name: "Nhật Nam", isGK: false, role: "member" },
+  { name: "Thuận Nam", isGK: false, role: "member" },
+  { name: "Bảo Hoàng", isGK: false, role: "member" },
+  { name: "Hữu Thành", isGK: false, role: "member" },
+  { name: "Gia Huy", isGK: false, role: "member" },
+  { name: "Minh Quân", isGK: false, role: "member" },
+  { name: "Huy Anh", isGK: false, role: "member" },
+  { name: "Minh Cường", isGK: false, role: "member" },
+  { name: "Hồng Minh", isGK: false, role: "member" },
+  { name: "Khánh Duy", isGK: false, role: "member" },
+  { name: "Nam Khánh", isGK: false, role: "member" },
+  { name: "Quốc Huy", isGK: true, role: "member" },
+  { name: "Hải Đăng", isGK: false, role: "member" },
+  { name: "Khắc Thành", isGK: false, role: "member" },
+  { name: "Tạ Quang Minh", isGK: false, role: "member" },
+  { name: "Nguyễn Quang Minh", isGK: false, role: "member" },
+  { name: "Quốc An", isGK: true, role: "member" },
+  { name: "Trí Thành", isGK: false, role: "member" },
+  { name: "Minh Tân", isGK: false, role: "member" },
+  { name: "Khánh An", isGK: false, role: "member" },
+  { name: "Trung Hiếu", isGK: false, role: "member" },
+  { name: "Đức Minh", isGK: false, role: "member" },
+  { name: "Hải Hà", isGK: false, role: "member" }
+];
 
-const SESSION_KEY = 'ga_session';
+// ===================== STORAGE KEYS =====================
+const STORAGE_KEYS = {
+  members: 'ga_members',
+  match: 'ga_match',
+  votes: 'ga_votes',
+  fund: 'ga_fund',
+  session: 'ga_session',
+  theme: 'ga_theme'
+};
 
 // ===================== STATE =====================
 let members = [];
@@ -413,41 +640,108 @@ let isAdmin = false;
 let currentTab = 'vote';
 let fundModalMode = 'income';
 let isVoting = false;
+let adminPage = 1;
+const ADMIN_PAGE_SIZE = 10;
+let confirmCallback = null;
+
+// ===================== STORAGE HELPERS =====================
+function loadData(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch { return fallback; }
+}
+
+function saveData(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+function removeVietnameseTones(str) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').replace(/\s+/g, '').toLowerCase();
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+// ===================== INIT DATA =====================
+function initMembers() {
+  const stored = loadData(STORAGE_KEYS.members, null);
+  if (stored && Array.isArray(stored) && stored.length > 0) {
+    members = stored;
+  } else {
+    members = SAMPLE_MEMBERS.map((m, i) => ({
+      id: 'm' + (i + 1),
+      name: m.name,
+      username: removeVietnameseTones(m.name),
+      password: '123456',
+      isGK: m.isGK,
+      role: m.role,
+      createdAt: new Date().toISOString()
+    }));
+    saveData(STORAGE_KEYS.members, members);
+  }
+}
 
 // ===================== INIT =====================
-async function init() {
-  try {
-    const { data, error } = await sb.from('members').select('*').order('name');
-    if (error) throw error;
-    members = data || [];
+function init() {
+  initMembers();
+  currentMatch = loadData(STORAGE_KEYS.match, null);
+  votes = loadData(STORAGE_KEYS.votes, []);
+  fundTxns = loadData(STORAGE_KEYS.fund, []);
 
-    const memberSelect = document.getElementById('memberSelect');
-    const fundMember = document.getElementById('fundMember');
-    members.forEach(m => {
-      const o1 = document.createElement('option');
-      o1.value = m.name; o1.textContent = m.name;
-      memberSelect.appendChild(o1);
-      const o2 = document.createElement('option');
-      o2.value = m.name; o2.textContent = m.name;
-      fundMember.appendChild(o2);
-    });
+  const memberSelect = document.getElementById('memberSelect');
+  const fundMember = document.getElementById('fundMember');
+  members.forEach(m => {
+    const o1 = document.createElement('option');
+    o1.value = m.name; o1.textContent = m.name;
+    memberSelect.appendChild(o1);
+    const o2 = document.createElement('option');
+    o2.value = m.name; o2.textContent = m.name;
+    fundMember.appendChild(o2);
+  });
 
-    document.getElementById('loginLoading').classList.add('hidden');
-    document.getElementById('loginForm').classList.remove('hidden');
-
-    const saved = sessionStorage.getItem(SESSION_KEY);
-    if (saved) {
+  const saved = sessionStorage.getItem(STORAGE_KEYS.session);
+  if (saved) {
+    try {
       const s = JSON.parse(saved);
       const m = members.find(x => x.name === s.name);
       if (m && m.password === s.password) {
-        setCurrentUser(m.name, m.role === 'admin');
+        setCurrentUser(m.name);
       } else {
-        sessionStorage.removeItem(SESSION_KEY);
+        sessionStorage.removeItem(STORAGE_KEYS.session);
       }
-    }
-  } catch (err) {
-    document.getElementById('loginLoading').innerHTML = '<i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i><p class="text-gray-500 text-sm mt-3">Không thể kết nối dữ liệu. Vui lòng tải lại trang.</p>';
+    } catch {}
   }
+
+  initTheme();
+}
+
+// ===================== THEME =====================
+function initTheme() {
+  const theme = loadData(STORAGE_KEYS.theme, 'light');
+  applyTheme(theme);
+}
+
+function applyTheme(theme) {
+  const icon = document.getElementById('themeIcon');
+  if (theme === 'dark') {
+    document.body.classList.add('dark');
+    document.documentElement.classList.add('dark');
+    icon.className = 'fas fa-sun text-sm';
+  } else {
+    document.body.classList.remove('dark');
+    document.documentElement.classList.remove('dark');
+    icon.className = 'fas fa-moon text-sm';
+  }
+}
+
+function toggleTheme() {
+  const current = loadData(STORAGE_KEYS.theme, 'light');
+  const next = current === 'dark' ? 'light' : 'dark';
+  saveData(STORAGE_KEYS.theme, next);
+  applyTheme(next);
+  showToast(next === 'dark' ? 'Đã bật Dark Mode' : 'Đã bật Light Mode', 'info');
 }
 
 // ===================== LOGIN =====================
@@ -459,15 +753,14 @@ function doLogin() {
   const m = members.find(x => x.name === sel.value);
   if (!m) { showToast('Thành viên không tồn tại', 'error'); return; }
   if (m.password !== pass) { showToast('Sai mật khẩu', 'error'); return; }
-  setCurrentUser(m.name, m.role === 'admin');
+  setCurrentUser(m.name);
 }
 
-function setCurrentUser(name, admin) {
+function setCurrentUser(name) {
   currentUser = name;
   const m = members.find(x => x.name === name);
-  isAdmin = m ? (m.role === 'admin') : admin;
-  const pass = m ? m.password : '';
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name, password: pass }));
+  isAdmin = m ? (m.role === 'admin') : false;
+  sessionStorage.setItem(STORAGE_KEYS.session, JSON.stringify({ name, password: m ? m.password : '' }));
 
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
@@ -477,18 +770,20 @@ function setCurrentUser(name, admin) {
   document.getElementById('fundActions').classList.toggle('hidden', !isAdmin);
   document.getElementById('fundNoAdmin').classList.toggle('hidden', isAdmin);
   document.getElementById('clearFundBtn').classList.toggle('hidden', !isAdmin);
+  document.getElementById('tabBtnAdmin').classList.toggle('hidden', !isAdmin);
 
   switchTab('vote');
   showToast('Chào ' + name + '!', 'success');
 }
 
 function logout() {
-  sessionStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(STORAGE_KEYS.session);
   currentUser = null; isAdmin = false;
   document.getElementById('mainApp').classList.add('hidden');
   document.getElementById('loginScreen').classList.remove('hidden');
   document.getElementById('loginPassword').value = '';
   document.getElementById('memberSelect').value = '';
+  document.getElementById('tabBtnAdmin').classList.add('hidden');
 }
 
 // ===================== SETTINGS =====================
@@ -502,7 +797,7 @@ function openSettingsModal() {
   showModal('settingsModal');
 }
 
-async function changePassword() {
+function changePassword() {
   const oldPass = document.getElementById('oldPassword').value;
   const newPass = document.getElementById('newPassword').value;
   const confirmPass = document.getElementById('confirmPassword').value;
@@ -512,43 +807,28 @@ async function changePassword() {
   if (newPass.length < 4) { showToast('Mật khẩu mới phải có ít nhất 4 ký tự', 'error'); return; }
   if (newPass !== confirmPass) { showToast('Mật khẩu mới không khớp', 'error'); return; }
 
-  const btn = document.getElementById('changePassBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang lưu...';
-  try {
-    const { error } = await sb.from('members').update({ password: newPass }).eq('id', m.id);
-    if (error) throw error;
-    m.password = newPass;
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name: currentUser, password: newPass }));
-    closeModal('settingsModal');
-    showToast('Đã đổi mật khẩu thành công', 'success');
-  } catch (err) {
-    showToast('Lỗi khi đổi mật khẩu', 'error');
-  }
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fas fa-key mr-2"></i>Đổi mật khẩu';
+  m.password = newPass;
+  saveData(STORAGE_KEYS.members, members);
+  sessionStorage.setItem(STORAGE_KEYS.session, JSON.stringify({ name: currentUser, password: newPass }));
+  closeModal('settingsModal');
+  showToast('Đã đổi mật khẩu thành công', 'success');
 }
 
 // ===================== TABS =====================
 function switchTab(tab) {
   currentTab = tab;
-  ['vote','stats','fund'].forEach(t => {
+  ['vote','stats','fund','admin'].forEach(t => {
     document.getElementById('tab'+cap(t)).classList.toggle('hidden', t !== tab);
     document.getElementById('tabBtn'+cap(t)).classList.toggle('active', t === tab);
   });
   if (tab === 'vote') renderVote();
   if (tab === 'stats') renderStats();
   if (tab === 'fund') renderFund();
+  if (tab === 'admin') renderAdmin();
 }
 function cap(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
 
 // ===================== MATCH =====================
-async function fetchMatch() {
-  const { data, error } = await sb.from('matches').select('*').order('created_at', { ascending: false }).limit(1);
-  if (error) return;
-  currentMatch = data && data.length > 0 ? data[0] : null;
-}
-
 function openMatchModal() {
   if (currentMatch) {
     const d = new Date(currentMatch.match_date);
@@ -562,67 +842,50 @@ function openMatchModal() {
   showModal('matchModal');
 }
 
-async function saveMatch() {
+function saveMatch() {
   const dateVal = document.getElementById('matchDateInput').value;
   const desc = document.getElementById('matchDescInput').value;
   if (!dateVal) { showToast('Vui lòng chọn ngày giờ', 'error'); return; }
   const iso = new Date(dateVal).toISOString();
-  const btn = document.getElementById('saveMatchBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang lưu...';
-  try {
-    if (currentMatch) {
-      const { error } = await sb.from('matches').update({ match_date: iso, description: desc }).eq('id', currentMatch.id);
-      if (error) throw error;
-      const { error: ve } = await sb.from('votes').delete().eq('match_id', currentMatch.id);
-      if (ve) throw ve;
-    } else {
-      const { data, error } = await sb.from('matches').insert({ match_date: iso, description: desc }).select();
-      if (error) throw error;
-    }
-    closeModal('matchModal');
-    showToast('Đã cập nhật trận đấu và reset vote', 'success');
-    await fetchMatch();
-    renderVote();
-    renderStats();
-  } catch (err) {
-    showToast('Lỗi khi lưu trận đấu', 'error');
-  }
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fas fa-save mr-2"></i>Lưu và reset vote';
+  currentMatch = { id: genId(), match_date: iso, description: desc, created_at: new Date().toISOString() };
+  saveData(STORAGE_KEYS.match, currentMatch);
+  votes = [];
+  saveData(STORAGE_KEYS.votes, votes);
+  closeModal('matchModal');
+  showToast('Đã cập nhật trận đấu và reset vote', 'success');
+  renderVote();
+  renderStats();
 }
 
 // ===================== VOTE =====================
-async function castVote(status) {
+function castVote(status) {
   if (!currentUser) { showToast('Vui lòng đăng nhập', 'error'); return; }
   if (!currentMatch) { showToast('Chưa có trận đấu nào', 'error'); return; }
   if (isVoting) return;
   isVoting = true;
-
   setVoteButtonsDisabled(true);
 
-  try {
-    const existing = votes.find(v => v.member_name === currentUser && v.match_id === currentMatch.id);
-    if (existing) {
-      if (existing.status === status) {
-        showToast('Bạn đã vote lựa chọn này rồi', 'info');
-      } else {
-        const { error } = await sb.from('votes').update({ status }).eq('id', existing.id);
-        if (error) throw error;
-        const msg = status === 'yes' ? 'Đã cập nhật: Có đá' : status === 'no' ? 'Đã cập nhật: Không đá' : 'Đã cập nhật: Cân nhắc';
-        showToast(msg, 'success');
-      }
+  const existing = votes.find(v => v.member_name === currentUser && v.match_id === currentMatch.id);
+  if (existing) {
+    if (existing.status === status) {
+      showToast('Bạn đã vote lựa chọn này rồi', 'info');
     } else {
-      const { error } = await sb.from('votes').insert({ match_id: currentMatch.id, member_name: currentUser, status });
-      if (error) throw error;
-      const msg = status === 'yes' ? 'Đã ghi nhận: Có đá' : status === 'no' ? 'Đã ghi nhận: Không đá' : 'Đã ghi nhận: Cân nhắc';
+      existing.status = status;
+      saveData(STORAGE_KEYS.votes, votes);
+      const msg = status === 'yes' ? 'Đã cập nhật: Có đá' : status === 'no' ? 'Đã cập nhật: Không đá' : 'Đã cập nhật: Cân nhắc';
       showToast(msg, 'success');
     }
-  } catch (err) {
-    showToast('Lỗi khi vote. Có thể bạn đã vote rồi, vui lòng tải lại trang.', 'error');
+  } else {
+    votes.push({ id: genId(), match_id: currentMatch.id, member_name: currentUser, status });
+    saveData(STORAGE_KEYS.votes, votes);
+    const msg = status === 'yes' ? 'Đã ghi nhận: Có đá' : status === 'no' ? 'Đã ghi nhận: Không đá' : 'Đã ghi nhận: Cân nhắc';
+    showToast(msg, 'success');
   }
+
   isVoting = false;
   setVoteButtonsDisabled(false);
+  renderVote();
+  renderStats();
 }
 
 function setVoteButtonsDisabled(disabled) {
@@ -680,7 +943,7 @@ function renderVote() {
     } else {
       el.innerHTML = lists[type].map(m => {
         const mem = members.find(x => x.name === m);
-        const isGK = mem && mem.is_gk;
+        const isGK = mem && mem.isGK;
         const color = type === 'yes' ? 'green' : type === 'maybe' ? 'amber' : 'red';
         const isMe = m === currentUser;
         return `<div class="member-card flex items-center gap-2 bg-white/5 rounded-lg px-3 py-2">
@@ -721,7 +984,7 @@ function renderStats() {
         <div class="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center text-red-400 font-bold">${m.name.charAt(0)}</div>
         <div class="flex-1">
           <p class="text-sm font-semibold text-gray-200">${m.name}</p>
-          ${m.is_gk ? '<span class="text-[10px] bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded font-bold">Thủ môn</span>' : '<span class="text-[10px] text-gray-500">Chưa vote</span>'}
+          ${m.isGK ? '<span class="text-[10px] bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded font-bold">Thủ môn</span>' : '<span class="text-[10px] text-gray-500">Chưa vote</span>'}
         </div>
         <i class="fas fa-bell text-red-400 text-sm"></i>
       </div>`;
@@ -796,55 +1059,338 @@ function openFundModal(mode) {
   showModal('fundModal');
 }
 
-async function saveFundTransaction() {
+function saveFundTransaction() {
   const amount = parseInt(document.getElementById('fundAmount').value);
   const memberVal = document.getElementById('fundMember').value;
   const note = document.getElementById('fundNote').value.trim();
   if (!amount || amount <= 0) { showToast('Nhập số tiền hợp lệ', 'error'); return; }
   if (fundModalMode === 'income' && !memberVal) { showToast('Vui lòng chọn thành viên nộp', 'error'); return; }
 
-  const btn = document.getElementById('fundSaveBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang lưu...';
-  try {
-    const { error } = await sb.from('fund_transactions').insert({
-      type: fundModalMode,
-      member_name: fundModalMode === 'income' ? memberVal : '',
-      amount: amount,
-      note: note || (fundModalMode === 'income' ? 'Nộp quỹ' : 'Chi quỹ'),
-      created_by: currentUser
-    });
-    if (error) throw error;
-    closeModal('fundModal');
-    showToast(fundModalMode === 'income' ? 'Đã ghi nhận nộp quỹ' : 'Đã ghi nhận chi quỹ', 'success');
-  } catch (err) {
-    showToast('Lỗi khi lưu giao dịch', 'error');
-  }
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fas fa-check mr-2"></i>Lưu giao dịch';
+  fundTxns.push({
+    id: genId(),
+    type: fundModalMode,
+    member_name: fundModalMode === 'income' ? memberVal : '',
+    amount: amount,
+    note: note || (fundModalMode === 'income' ? 'Nộp quỹ' : 'Chi quỹ'),
+    created_by: currentUser,
+    created_at: new Date().toISOString()
+  });
+  saveData(STORAGE_KEYS.fund, fundTxns);
+  closeModal('fundModal');
+  showToast(fundModalMode === 'income' ? 'Đã ghi nhận nộp quỹ' : 'Đã ghi nhận chi quỹ', 'success');
+  renderFund();
 }
 
-async function deleteTransaction(id) {
-  try {
-    const { error } = await sb.from('fund_transactions').delete().eq('id', id);
-    if (error) throw error;
-    showToast('Đã xóa giao dịch', 'success');
-  } catch (err) {
-    showToast('Lỗi khi xóa', 'error');
-  }
+function deleteTransaction(id) {
+  fundTxns = fundTxns.filter(t => t.id !== id);
+  saveData(STORAGE_KEYS.fund, fundTxns);
+  showToast('Đã xóa giao dịch', 'success');
+  renderFund();
 }
 
-function confirmClearFund() { showModal('confirmModal'); }
-
-async function clearFundHistory() {
-  closeModal('confirmModal');
-  try {
-    const { error } = await sb.from('fund_transactions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    if (error) throw error;
+function confirmClearFund() {
+  document.getElementById('confirmTitle').textContent = 'Xóa toàn bộ lịch sử?';
+  document.getElementById('confirmMsg').textContent = 'Hành động này không thể hoàn tác. Toàn bộ lịch sử thu chi sẽ bị xóa.';
+  confirmCallback = () => {
+    fundTxns = [];
+    saveData(STORAGE_KEYS.fund, fundTxns);
     showToast('Đã xóa toàn bộ lịch sử', 'success');
-  } catch (err) {
-    showToast('Lỗi khi xóa', 'error');
+    renderFund();
+  };
+  showModal('confirmModal');
+}
+
+document.getElementById('confirmOkBtn').onclick = function() {
+  if (confirmCallback) confirmCallback();
+  closeModal('confirmModal');
+  confirmCallback = null;
+};
+
+// ===================== ADMIN DASHBOARD =====================
+function renderAdmin() {
+  renderAdminStats();
+  renderAdminTable();
+}
+
+function renderAdminStats() {
+  document.getElementById('adminStatTotal').textContent = members.length;
+  document.getElementById('adminStatAdmins').textContent = members.filter(m => m.role === 'admin').length;
+  const now = new Date();
+  const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  document.getElementById('adminStatNew').textContent = members.filter(m => m.createdAt && new Date(m.createdAt) >= weekAgo).length;
+  document.getElementById('adminStatGK').textContent = members.filter(m => m.isGK).length;
+}
+
+function renderAdminTable() {
+  const search = document.getElementById('adminSearch') ? document.getElementById('adminSearch').value.toLowerCase() : '';
+  let filtered = members;
+  if (search) {
+    filtered = members.filter(m =>
+      m.name.toLowerCase().includes(search) ||
+      (m.username || '').toLowerCase().includes(search)
+    );
   }
+  filtered = [...filtered].sort((a,b) => a.name.localeCompare(b.name, 'vi'));
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ADMIN_PAGE_SIZE));
+  if (adminPage > totalPages) adminPage = totalPages;
+  const start = (adminPage - 1) * ADMIN_PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + ADMIN_PAGE_SIZE);
+
+  const tbody = document.getElementById('adminTableBody');
+  const emptyEl = document.getElementById('adminEmpty');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    emptyEl.classList.remove('hidden');
+    document.getElementById('adminPagination').classList.add('hidden');
+    return;
+  }
+  emptyEl.classList.add('hidden');
+  document.getElementById('adminPagination').classList.remove('hidden');
+
+  tbody.innerHTML = pageItems.map((m, i) => {
+    const num = start + i + 1;
+    const isAdminRole = m.role === 'admin';
+    return `<tr class="admin-table-row border-b border-green-900/40 slide-in-right" style="animation-delay:${i*0.03}s">
+      <td class="px-4 py-3 text-gray-400 text-xs">${num}</td>
+      <td class="px-4 py-3">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center text-green-400 text-xs font-bold">${m.name.charAt(0)}</div>
+          <span class="text-white font-medium text-sm">${m.name}</span>
+          ${m.isGK ? '<span class="text-[10px] bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded font-bold">GK</span>' : ''}
+        </div>
+      </td>
+      <td class="px-4 py-3 text-gray-300 text-sm font-mono">${m.username || removeVietnameseTones(m.name)}</td>
+      <td class="px-4 py-3 text-gray-300 text-sm font-mono">${m.password}</td>
+      <td class="px-4 py-3">
+        ${isAdminRole
+          ? '<span class="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-1 rounded font-bold">Admin</span>'
+          : '<span class="text-[10px] bg-gray-600/30 text-gray-400 px-2 py-1 rounded font-medium">Member</span>'}
+      </td>
+      <td class="px-4 py-3 text-center">
+        <label class="switch">
+          <input type="checkbox" ${m.isGK ? 'checked' : ''} onchange="toggleGK('${m.id}')">
+          <span class="slider"></span>
+        </label>
+      </td>
+      <td class="px-4 py-3 text-right">
+        <button onclick="openEditMemberModal('${m.id}')" class="text-blue-400 hover:text-blue-300 text-sm mr-2" title="Sửa"><i class="fas fa-pen"></i></button>
+        <button onclick="toggleAdminRole('${m.id}')" class="text-amber-400 hover:text-amber-300 text-sm mr-2" title="${isAdminRole ? 'Bỏ quyền Admin' : 'Cấp quyền Admin'}"><i class="fas fa-${isAdminRole ? 'user-slash' : 'crown'}"></i></button>
+        <button onclick="confirmDeleteMember('${m.id}')" class="text-red-400 hover:text-red-300 text-sm" title="Xóa"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('adminPageInfo').textContent = `Hiển thị ${start + 1}–${Math.min(start + ADMIN_PAGE_SIZE, filtered.length)} / ${filtered.length}`;
+  renderPagination(totalPages);
+}
+
+function renderPagination(totalPages) {
+  const container = document.getElementById('adminPageBtns');
+  let html = '';
+  html += `<button class="page-btn px-3 py-1.5 rounded-lg bg-green-900/40 border border-green-700 text-green-300 text-xs hover:bg-green-800" ${adminPage === 1 ? 'disabled' : ''} onclick="goToPage(${adminPage - 1})"><i class="fas fa-chevron-left"></i></button>`;
+  for (let p = 1; p <= totalPages; p++) {
+    if (p === 1 || p === totalPages || (p >= adminPage - 1 && p <= adminPage + 1)) {
+      html += `<button class="page-btn px-3 py-1.5 rounded-lg ${p === adminPage ? 'bg-green-600 text-white' : 'bg-green-900/40 border border-green-700 text-green-300 hover:bg-green-800'} text-xs font-medium" onclick="goToPage(${p})">${p}</button>`;
+    } else if (p === adminPage - 2 || p === adminPage + 2) {
+      html += '<span class="text-gray-500 text-xs px-1">...</span>';
+    }
+  }
+  html += `<button class="page-btn px-3 py-1.5 rounded-lg bg-green-900/40 border border-green-700 text-green-300 text-xs hover:bg-green-800" ${adminPage === totalPages ? 'disabled' : ''} onclick="goToPage(${adminPage + 1})"><i class="fas fa-chevron-right"></i></button>`;
+  container.innerHTML = html;
+}
+
+function goToPage(p) {
+  adminPage = p;
+  renderAdminTable();
+}
+
+function toggleGK(id) {
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  m.isGK = !m.isGK;
+  saveData(STORAGE_KEYS.members, members);
+  showToast(m.isGK ? 'Đã đặt làm thủ môn' : 'Đã bỏ thủ môn', 'success');
+  renderAdminStats();
+}
+
+function toggleAdminRole(id) {
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  if (m.role === 'admin') {
+    const adminCount = members.filter(x => x.role === 'admin').length;
+    if (adminCount <= 1) { showToast('Không thể bỏ quyền admin cuối cùng', 'error'); return; }
+    m.role = 'member';
+  showToast('Đã bỏ quyền Admin', 'info');
+  } else {
+    m.role = 'admin';
+    showToast('Đã cấp quyền Admin', 'success');
+  }
+  saveData(STORAGE_KEYS.members, members);
+  if (currentUser === m.name) {
+    isAdmin = m.role === 'admin';
+    document.getElementById('adminBadge').classList.toggle('hidden', !isAdmin);
+    document.getElementById('currentUserName').textContent = currentUser + (isAdmin ? ' (Đội trưởng)' : '');
+  }
+  renderAdminStats();
+  renderAdminTable();
+}
+
+function openAddMemberModal() {
+  document.getElementById('newMemberName').value = '';
+  document.getElementById('newMemberUsername').value = '';
+  document.getElementById('newMemberUsername').dataset.manual = '';
+  document.getElementById('newMemberPassword').value = '';
+  document.getElementById('newMemberGK').checked = false;
+  document.getElementById('newMemberAdmin').checked = false;
+  showModal('addMemberModal');
+}
+
+function addMember() {
+  const name = document.getElementById('newMemberName').value.trim();
+  if (!name) { showToast('Vui lòng nhập họ tên', 'error'); return; }
+  if (members.some(m => m.name.toLowerCase() === name.toLowerCase())) { showToast('Tên thành viên đã tồn tại', 'error'); return; }
+
+  const usernameInput = document.getElementById('newMemberUsername');
+  let username = usernameInput.value.trim();
+  if (!username || usernameInput.dataset.manual !== '1') {
+    username = removeVietnameseTones(name);
+  }
+  if (members.some(m => (m.username || removeVietnameseTones(m.name)) === username)) {
+    username = username + '_' + Date.now().toString(36).slice(-4);
+  }
+
+  const password = document.getElementById('newMemberPassword').value || '123456';
+  const isGK = document.getElementById('newMemberGK').checked;
+  const role = document.getElementById('newMemberAdmin').checked ? 'admin' : 'member';
+
+  const newMember = {
+    id: genId(),
+    name: name,
+    username: username,
+    password: password,
+    isGK: isGK,
+    role: role,
+    createdAt: new Date().toISOString()
+  };
+  members.push(newMember);
+  saveData(STORAGE_KEYS.members, members);
+
+  const memberSelect = document.getElementById('memberSelect');
+  const fundMember = document.getElementById('fundMember');
+  const o1 = document.createElement('option');
+  o1.value = name; o1.textContent = name;
+  memberSelect.appendChild(o1);
+  const o2 = document.createElement('option');
+  o2.value = name; o2.textContent = name;
+  fundMember.appendChild(o2);
+
+  closeModal('addMemberModal');
+  showToast('Đã thêm thành viên: ' + name, 'success');
+  renderAdmin();
+}
+
+function openEditMemberModal(id) {
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('editMemberId').value = m.id;
+  document.getElementById('editMemberName').value = m.name;
+  document.getElementById('editMemberUsername').value = m.username || removeVietnameseTones(m.name);
+  document.getElementById('editMemberPassword').value = m.password;
+  document.getElementById('editMemberGK').checked = m.isGK;
+  document.getElementById('editMemberAdmin').checked = m.role === 'admin';
+  showModal('editMemberModal');
+}
+
+function saveEditMember() {
+  const id = document.getElementById('editMemberId').value;
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  const name = document.getElementById('editMemberName').value.trim();
+  if (!name) { showToast('Vui lòng nhập họ tên', 'error'); return; }
+  if (members.some(x => x.id !== id && x.name.toLowerCase() === name.toLowerCase())) {
+    showToast('Tên đã tồn tại', 'error'); return;
+  }
+  const oldName = m.name;
+  m.name = name;
+  m.username = document.getElementById('editMemberUsername').value.trim() || removeVietnameseTones(name);
+  m.password = document.getElementById('editMemberPassword').value || '123456';
+  m.isGK = document.getElementById('editMemberGK').checked;
+  const wasAdmin = m.role === 'admin';
+  m.role = document.getElementById('editMemberAdmin').checked ? 'admin' : 'member';
+  if (m.role === 'member' && wasAdmin) {
+    const adminCount = members.filter(x => x.role === 'admin').length;
+    if (adminCount === 0) { m.role = 'admin'; showToast('Không thể bỏ quyền admin cuối cùng', 'error'); }
+  }
+  saveData(STORAGE_KEYS.members, members);
+
+  if (oldName !== name) {
+    votes.forEach(v => { if (v.member_name === oldName) v.member_name = name; });
+    saveData(STORAGE_KEYS.votes, votes);
+    fundTxns.forEach(t => { if (t.member_name === oldName) t.member_name = name; });
+    saveData(STORAGE_KEYS.fund, fundTxns);
+    const memberSelect = document.getElementById('memberSelect');
+    [...memberSelect.options].forEach(o => { if (o.value === oldName) { o.value = name; o.textContent = name; } });
+    const fundMember = document.getElementById('fundMember');
+    [...fundMember.options].forEach(o => { if (o.value === oldName) { o.value = name; o.textContent = name; } });
+  }
+  if (currentUser === m.name) {
+    isAdmin = m.role === 'admin';
+    document.getElementById('adminBadge').classList.toggle('hidden', !isAdmin);
+    document.getElementById('currentUserName').textContent = currentUser + (isAdmin ? ' (Đội trưởng)' : '');
+  }
+  closeModal('editMemberModal');
+  showToast('Đã lưu thay đổi', 'success');
+  renderAdmin();
+}
+
+function confirmDeleteMember(id) {
+  const m = members.find(x => x.id === id);
+  if (!m) return;
+  if (m.role === 'admin') {
+    const adminCount = members.filter(x => x.role === 'admin').length;
+    if (adminCount <= 1) { showToast('Không thể xóa admin cuối cùng', 'error'); return; }
+  }
+  document.getElementById('confirmTitle').textContent = 'Xóa thành viên?';
+  document.getElementById('confirmMsg').textContent = `Bạn có chắc muốn xóa "${m.name}"? Hành động này không thể hoàn tác.`;
+  confirmCallback = () => {
+    members = members.filter(x => x.id !== id);
+    saveData(STORAGE_KEYS.members, members);
+    votes = votes.filter(v => v.member_name !== m.name);
+    saveData(STORAGE_KEYS.votes, votes);
+    const memberSelect = document.getElementById('memberSelect');
+    [...memberSelect.options].forEach(o => { if (o.value === m.name) o.remove(); });
+    const fundMember = document.getElementById('fundMember');
+    [...fundMember.options].forEach(o => { if (o.value === m.name) o.remove(); });
+    if (currentUser === m.name) { logout(); return; }
+    showToast('Đã xóa thành viên: ' + m.name, 'success');
+    renderAdmin();
+  };
+  showModal('confirmModal');
+}
+
+function exportData() {
+  const headers = ['STT', 'Họ tên', 'Tài khoản', 'Mật khẩu', 'Vai trò', 'Thủ môn', 'Ngày tạo'];
+  const rows = [...members].sort((a,b) => a.name.localeCompare(b.name, 'vi')).map((m, i) => [
+    i + 1,
+    m.name,
+    m.username || removeVietnameseTones(m.name),
+    m.password,
+    m.role === 'admin' ? 'Admin' : 'Member',
+    m.isGK ? 'Có' : 'Không',
+    m.createdAt ? formatDate(m.createdAt) : ''
+  ]);
+  let csv = '\uFEFF' + headers.join(',') + '\n';
+  rows.forEach(r => { csv += r.map(c => `"${c}"`).join(',') + '\n'; });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'greenfield_antlers_members.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Đã xuất file CSV', 'success');
 }
 
 // ===================== MODAL & TOAST =====================
@@ -873,53 +1419,8 @@ document.querySelectorAll('[id$="Modal"]').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
 });
 
-// ===================== REALTIME SUBSCRIPTIONS =====================
-async function startRealtime() {
-  await fetchMatch();
-  const { data: vData } = await sb.from('votes').select('*');
-  votes = vData || [];
-  const { data: fData } = await sb.from('fund_transactions').select('*');
-  fundTxns = fData || [];
-  renderVote(); renderStats(); renderFund();
-
-  sb.channel('db-changes')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'members' }, payload => {
-      if (payload.eventType === 'UPDATE') {
-        const idx = members.findIndex(m => m.id === payload.new.id);
-        if (idx >= 0) members[idx] = payload.new;
-      }
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, async payload => {
-      await fetchMatch();
-      renderVote(); renderStats();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'votes' }, async payload => {
-      if (payload.eventType === 'INSERT') {
-        votes.push(payload.new);
-      } else if (payload.eventType === 'UPDATE') {
-        const idx = votes.findIndex(v => v.id === payload.new.id);
-        if (idx >= 0) votes[idx] = payload.new;
-      } else if (payload.eventType === 'DELETE') {
-        votes = votes.filter(v => v.id !== payload.old.id);
-      }
-      renderVote(); renderStats();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'fund_transactions' }, payload => {
-      if (payload.eventType === 'INSERT') {
-        fundTxns.push(payload.new);
-      } else if (payload.eventType === 'DELETE') {
-        fundTxns = fundTxns.filter(t => t.id !== payload.old.id);
-      }
-      renderFund();
-    })
-    .subscribe();
-}
-
 // ===================== START =====================
-(async () => {
-  await init();
-  await startRealtime();
-})();
+init();
 </script>
 </body>
 </html>
