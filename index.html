@@ -26,6 +26,7 @@
   .vote-btn { transition: all 0.2s ease; position: relative; overflow: hidden; }
   .vote-btn:active { transform: scale(0.95); }
   .vote-btn.active { box-shadow: 0 0 0 3px rgba(255,255,255,0.15) inset; }
+  .vote-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .login-card { animation: fadeInScale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
   @keyframes fadeInScale { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
   .pulse-badge { animation: pulseRing 2s infinite; }
@@ -219,7 +220,7 @@
       <div class="mb-6">
         <div class="flex justify-between text-sm mb-2">
           <span class="text-green-200 font-medium">Tiến độ vote</span>
-          <span id="progressText" class="text-white font-bold">0 / 24</span>
+          <span id="progressText" class="text-white font-bold">0 / 0</span>
         </div>
         <div class="h-3 bg-green-950 rounded-full overflow-hidden border border-green-800">
           <div id="progressBar" class="h-full bg-gradient-to-r from-green-500 to-green-300 rounded-full transition-all duration-500" style="width: 0%"></div>
@@ -395,7 +396,7 @@
 <script>
 // ===================== SUPABASE CONFIG =====================
 const SUPABASE_URL = 'https://ybspsnxdbjdkenhjbqfw.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlic3BzbnhkYmpka2VuaGpicWZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNzY0NDQsImV4cCI6MjEwNDk1MjQ0NH0.-CjRL16QXdYL779f3Xw9txl2BwikPYUJrUhPke7lLlg'; // giữ nguyên đoạn key dài của ông
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlic3BzbnhkYmpka2VuaGpicWZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzNzY0NDQsImV4cCI6MjEwNDk1MjQ0NH0.-CjRL16QXdYL779f3Xw9txl2BwikPYUJrUhPke7lLlg';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   realtime: { params: { eventsPerSecond: 10 } }
 });
@@ -411,15 +412,15 @@ let currentUser = null;
 let isAdmin = false;
 let currentTab = 'vote';
 let fundModalMode = 'income';
+let isVoting = false;
 
 // ===================== INIT =====================
 async function init() {
   try {
     const { data, error } = await sb.from('members').select('*').order('name');
     if (error) throw error;
-    members = data;
+    members = data || [];
 
-    // Populate selects
     const memberSelect = document.getElementById('memberSelect');
     const fundMember = document.getElementById('fundMember');
     members.forEach(m => {
@@ -434,7 +435,6 @@ async function init() {
     document.getElementById('loginLoading').classList.add('hidden');
     document.getElementById('loginForm').classList.remove('hidden');
 
-    // Restore session
     const saved = sessionStorage.getItem(SESSION_KEY);
     if (saved) {
       const s = JSON.parse(saved);
@@ -463,20 +463,20 @@ function doLogin() {
 }
 
 function setCurrentUser(name, admin) {
-    currentUser = name;
-    const m = members.find(x => x.name === name);
-    isAdmin = m ? (m.role === 'admin') : admin; 
-    const pass = m ? m.password : '';
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name, password: pass }));
+  currentUser = name;
+  const m = members.find(x => x.name === name);
+  isAdmin = m ? (m.role === 'admin') : admin;
+  const pass = m ? m.password : '';
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name, password: pass }));
 
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
-  document.getElementById('currentUserName').textContent = name + (admin ? ' (Đội trưởng)' : '');
-  document.getElementById('adminBadge').classList.toggle('hidden', !admin);
-  document.getElementById('editMatchBtn').classList.toggle('hidden', !admin);
-  document.getElementById('fundActions').classList.toggle('hidden', !admin);
-  document.getElementById('fundNoAdmin').classList.toggle('hidden', admin);
-  document.getElementById('clearFundBtn').classList.toggle('hidden', !admin);
+  document.getElementById('currentUserName').textContent = name + (isAdmin ? ' (Đội trưởng)' : '');
+  document.getElementById('adminBadge').classList.toggle('hidden', !isAdmin);
+  document.getElementById('editMatchBtn').classList.toggle('hidden', !isAdmin);
+  document.getElementById('fundActions').classList.toggle('hidden', !isAdmin);
+  document.getElementById('fundNoAdmin').classList.toggle('hidden', isAdmin);
+  document.getElementById('clearFundBtn').classList.toggle('hidden', !isAdmin);
 
   switchTab('vote');
   showToast('Chào ' + name + '!', 'success');
@@ -566,7 +566,7 @@ async function saveMatch() {
   const dateVal = document.getElementById('matchDateInput').value;
   const desc = document.getElementById('matchDescInput').value;
   if (!dateVal) { showToast('Vui lòng chọn ngày giờ', 'error'); return; }
-  const iso = dateVal;
+  const iso = new Date(dateVal).toISOString();
   const btn = document.getElementById('saveMatchBtn');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang lưu...';
@@ -583,7 +583,8 @@ async function saveMatch() {
     closeModal('matchModal');
     showToast('Đã cập nhật trận đấu và reset vote', 'success');
     await fetchMatch();
-    if (typeof renderMatch === 'function') renderMatch();
+    renderVote();
+    renderStats();
   } catch (err) {
     showToast('Lỗi khi lưu trận đấu', 'error');
   }
@@ -595,20 +596,39 @@ async function saveMatch() {
 async function castVote(status) {
   if (!currentUser) { showToast('Vui lòng đăng nhập', 'error'); return; }
   if (!currentMatch) { showToast('Chưa có trận đấu nào', 'error'); return; }
-  const existing = votes.find(v => v.member_name === currentUser && v.match_id === currentMatch.id);
+  if (isVoting) return;
+  isVoting = true;
+
+  setVoteButtonsDisabled(true);
+
   try {
+    const existing = votes.find(v => v.member_name === currentUser && v.match_id === currentMatch.id);
     if (existing) {
-      const { error } = await sb.from('votes').update({ status }).eq('id', existing.id);
-      if (error) throw error;
+      if (existing.status === status) {
+        showToast('Bạn đã vote lựa chọn này rồi', 'info');
+      } else {
+        const { error } = await sb.from('votes').update({ status }).eq('id', existing.id);
+        if (error) throw error;
+        const msg = status === 'yes' ? 'Đã cập nhật: Có đá' : status === 'no' ? 'Đã cập nhật: Không đá' : 'Đã cập nhật: Cân nhắc';
+        showToast(msg, 'success');
+      }
     } else {
       const { error } = await sb.from('votes').insert({ match_id: currentMatch.id, member_name: currentUser, status });
       if (error) throw error;
+      const msg = status === 'yes' ? 'Đã ghi nhận: Có đá' : status === 'no' ? 'Đã ghi nhận: Không đá' : 'Đã ghi nhận: Cân nhắc';
+      showToast(msg, 'success');
     }
-    const msg = status === 'yes' ? 'Đã ghi nhận: Có đá' : status === 'no' ? 'Đã ghi nhận: Không đá' : 'Đã ghi nhận: Cân nhắc';
-    showToast(msg, 'success');
   } catch (err) {
-    showToast('Lỗi khi vote', 'error');
+    showToast('Lỗi khi vote. Có thể bạn đã vote rồi, vui lòng tải lại trang.', 'error');
   }
+  isVoting = false;
+  setVoteButtonsDisabled(false);
+}
+
+function setVoteButtonsDisabled(disabled) {
+  ['voteYesBtn','voteMaybeBtn','voteNoBtn'].forEach(id => {
+    document.getElementById(id).disabled = disabled;
+  });
 }
 
 function renderVote() {
@@ -836,30 +856,32 @@ function showToast(msg, type) {
   const t = document.getElementById('toast');
   const icon = document.getElementById('toastIcon');
   document.getElementById('toastMsg').textContent = msg;
-  icon.className = type === 'error' ? 'fas fa-circle-exclamation text-red-500 text-lg' : 'fas fa-circle-check text-green-500 text-lg';
+  if (type === 'error') {
+    icon.className = 'fas fa-circle-exclamation text-red-500 text-lg';
+  } else if (type === 'info') {
+    icon.className = 'fas fa-circle-info text-blue-500 text-lg';
+  } else {
+    icon.className = 'fas fa-circle-check text-green-500 text-lg';
+  }
   t.classList.remove('hidden');
   t.querySelector('div').classList.add('toast-enter');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { t.classList.add('hidden'); }, 2800);
 }
 
-// Close modal on backdrop click
 document.querySelectorAll('[id$="Modal"]').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
 });
 
 // ===================== REALTIME SUBSCRIPTIONS =====================
 async function startRealtime() {
-  // Initial data load
   await fetchMatch();
   const { data: vData } = await sb.from('votes').select('*');
-  console.log('Dữ liệu vote:', vData);
   votes = vData || [];
   const { data: fData } = await sb.from('fund_transactions').select('*');
   fundTxns = fData || [];
   renderVote(); renderStats(); renderFund();
 
-  // Subscribe to changes
   sb.channel('db-changes')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'members' }, payload => {
       if (payload.eventType === 'UPDATE') {
