@@ -440,7 +440,7 @@ async function init() {
       const s = JSON.parse(saved);
       const m = members.find(x => x.name === s.name);
       if (m && m.password === s.password) {
-        setCurrentUser(m.name, m.is_admin);
+        setCurrentUser(m.name, m.role === 'admin');
       } else {
         sessionStorage.removeItem(SESSION_KEY);
       }
