@@ -582,6 +582,8 @@ async function saveMatch() {
     }
     closeModal('matchModal');
     showToast('Đã cập nhật trận đấu và reset vote', 'success');
+    await fetchMatch();
+    if (typeof renderMatch === 'function') renderMatch();
   } catch (err) {
     showToast('Lỗi khi lưu trận đấu', 'error');
   }
