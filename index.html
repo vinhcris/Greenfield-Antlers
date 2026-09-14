@@ -1091,9 +1091,17 @@ async function startRealtime() {
 
 // ===================== START =====================
 (async () => {
-  await init();
-  await startRealtime();
-  setInterval(() => { renderVote(); renderStats(); }, 60000);
+    try {
+        await init();
+    } catch(e) {}
+    
+    try {
+        await startRealtime();
+    } catch(e) {
+        console.log("Bỏ qua lỗi đồng bộ cloud, chạy tiếp chế độ local");
+    }
+    
+    setInterval(() => { renderVote(); renderStats(); }, 60000);
 })();
 </script>
 </body>
