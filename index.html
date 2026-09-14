@@ -566,7 +566,7 @@ async function saveMatch() {
   const dateVal = document.getElementById('matchDateInput').value;
   const desc = document.getElementById('matchDescInput').value;
   if (!dateVal) { showToast('Vui lòng chọn ngày giờ', 'error'); return; }
-  const iso = new Date(dateVal).toISOString();
+  const iso = dateVal;
   const btn = document.getElementById('saveMatchBtn');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang lưu...';
