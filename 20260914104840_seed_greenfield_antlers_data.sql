@@ -40,6 +40,7 @@ INSERT INTO members (name, password, is_admin, is_gk) VALUES
   ('Khánh An', '123456', false, false),
   ('Trung Hiếu', '123456', false, false),
   ('Hải Hà', '123456', false, false)
+  ('Đức Minh', '123456', false, false)
 ON CONFLICT (name) DO NOTHING;
 
 -- Insert a sample match if none exists
