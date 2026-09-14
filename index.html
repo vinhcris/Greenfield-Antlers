@@ -463,11 +463,11 @@ function doLogin() {
 }
 
 function setCurrentUser(name, admin) {
-  currentUser = name;
-  isAdmin = admin;
-  const m = members.find(x => x.name === name);
-  const pass = m ? m.password : '';
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name, password: pass }));
+    currentUser = name;
+    const m = members.find(x => x.name === name);
+    isAdmin = m ? (m.role === 'admin') : admin; 
+    const pass = m ? m.password : '';
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ name, password: pass }));
 
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('mainApp').classList.remove('hidden');
