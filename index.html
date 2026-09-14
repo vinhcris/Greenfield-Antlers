@@ -459,7 +459,7 @@ function doLogin() {
   const m = members.find(x => x.name === sel.value);
   if (!m) { showToast('Thành viên không tồn tại', 'error'); return; }
   if (m.password !== pass) { showToast('Sai mật khẩu', 'error'); return; }
-  setCurrentUser(m.name, m.is_admin);
+  setCurrentUser(m.name, m.role === 'admin');
 }
 
 function setCurrentUser(name, admin) {
