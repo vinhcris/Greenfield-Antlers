@@ -853,6 +853,7 @@ async function startRealtime() {
   // Initial data load
   await fetchMatch();
   const { data: vData } = await sb.from('votes').select('*');
+  console.log('Dữ liệu vote:', vData);
   votes = vData || [];
   const { data: fData } = await sb.from('fund_transactions').select('*');
   fundTxns = fData || [];
