@@ -523,7 +523,7 @@ function toggleTheme() { const next = document.body.classList.contains('light-mo
 applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
 function memberInfo(name) { const base = TEAM_ROSTER[name] || [name,name,'Chưa cập nhật']; return { display_name: base[0], real_name: base[1], position: base[2], bio: '', ...(bios()[name] || {}), ...(sharedProfiles[name] || {}) }; }
 // Đổi thành true để tạm đóng ứng dụng với toàn bộ thành viên; false để mở lại.
-const APP_MAINTENANCE_MODE = false;
+const APP_MAINTENANCE_MODE = true;
 
 // ===================== STATE =====================
 let members = [];
